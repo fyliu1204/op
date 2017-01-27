@@ -1,0 +1,41 @@
+#include <iostream>
+#include <fstream>
+#include <queue>
+#include <vector>
+#include <algorithm>
+#include "thread.h"
+
+using namespace std;
+
+mutex m1;
+cv cv1;
+queue<pair<int,int>> q1;
+vector<int> v1;
+vector<pair<int,int>> d1;
+int cur_num = 0, max_num = 0, val_num = 0, act_num = 0;
+void disk(void *a) {
+}
+
+void build(void* a) {
+    char** argv = (char**)a;
+    int argv_size = argv.size();
+    cur_num = argv_size-2;
+    max_num = atoi(argv[1]);
+    val_num = min(cur_num,max_num);
+    for(int i=0; i<cur_num; ++i){
+        v1.push_back(0);
+        ifstream f_tmp(argv[i+2]);
+        int num1, num2;
+        f_tmp >> num1 >> num2;
+        d1.push_back({num1,num2});
+    }
+	for(int i=0; i<cur_num; ++i) thread t((thread_startfunc_t)disk, (void*)i);
+}
+
+int main(int argc, char* argv[])
+{
+	cpu::boot((thread_startfunc_t) build, (void *) argv , 0);
+}
+
+
+
